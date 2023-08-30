@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp header/framework3.cpp header/framework.cpp
+OBJS = main.cpp header/framework3.cpp
 
 #CC specifies which compiler we're using
 CC1 = icpx
@@ -17,7 +17,7 @@ LIBRARY_PATHS = -LDependency/
 COMPILER_FLAGS = -w -Wl,--subsystem,windows
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL3
+LINKER_FLAGS = -lSDL3
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = bin/TicTacToe
