@@ -1,6 +1,11 @@
 #pragma once
 
+#include "LTexture.h"
+
+
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 class framework3 {
 public:
@@ -9,7 +14,12 @@ public:
     ~framework3();
     int32_t getwidth();
     int32_t getheight();
+    
     SDL_Renderer* getRenderer();
+    TTF_Font* getFont();
+
+    void drawDefaultScreen();
+    void renderFont(float x,float y,SDL_FRect* dst);
     bool handleInput(bool& running);
 
 private:
@@ -17,19 +27,6 @@ private:
     int32_t screenheight;
     SDL_Window* window;
     SDL_Renderer* renderer;
-
-};
-
-class smartRectangle {
-public:
-    smartRectangle(float startPointx,float startPointy,float width,float height);
-    
-    ~smartRectangle();
-    void draw(SDL_Renderer* renderer);
-private:
-    float startx;
-    float starty;
-    float width;
-    float height;
-    SDL_FRect* rect;
+    TTF_Font* font;
+    LTexture fontTexture;
 };

@@ -1,31 +1,61 @@
 #include "framework3.hpp"
-#include <SDL3/SDL_events.h>
-#include <SDL3/SDL_keycode.h>
-#include <SDL3/SDL_rect.h>
-#include <SDL3/SDL_render.h>
-#include <cstdio>
-#include <iostream>
+#include <SDL2/SDL_log.h>
+#include <SDL3/SDL_error.h>
+#include <SDL3/SDL_pixels.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 framework3::framework3(const char* title,int startposx,int startposy,int32_t screenwidth,int32_t screenheight) {
     if (SDL_Init(SDL_InitFlags::SDL_INIT_VIDEO)) {
         SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "%s", SDL_GetError());
     }
-    window = SDL_CreateWindowWithPosition("Snake",startposx,startposy,screenwidth,screenheight,SDL_WINDOW_VULKAN);
+    window = SDL_CreateWindowWithPosition(title,startposx,startposy,screenwidth,screenheight,SDL_WINDOW_VULKAN);
     if (window == NULL)
     {
-        printf("winodw failed %s\n",SDL_GetError());
+        SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Creating window failed: %s\n",SDL_GetError());
     }
     renderer = SDL_CreateRenderer(window,NULL,SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Creating renderer failedL %s\n",SDL_GetError());
+    } else {
+        int img_flags = IMG_INIT_PNG;
+        if( !( IMG_Init( img_flags ) & img_flags ) ) {
+            SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Initializing sdl image failed %s\n",IMG_GetError());
+        }
+
+        if (TTF_Init() == -1) {
+            SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Initializing sdl ttf failed %s\n",TTF_GetError());
+        } else {
+            font = TTF_OpenFont("Resources/fonts/lazy.ttf", 28);
+            if (font == NULL) {
+                SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Font loading failed,%s\n",SDL_GetError());
+            } else {
+                SDL_Color color = {255,0,0};
+                if (!fontTexture.loadFromRenderedText("Welcome to TicTacToe", color, renderer, font)) {
+                    SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "Text rendering failed: %s\n",SDL_GetError());
+                }
+            }
+        }
+    }
 
     
 }
 
 framework3::~framework3() {
+
+    fontTexture.free();
+
+    TTF_CloseFont(font);
+    font = NULL;
+
     SDL_DestroyWindow(window);
     window = NULL;
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
     SDL_Quit();
+}
+
+void framework3::renderFont(float x, float y,SDL_FRect* dst) {
+    fontTexture.render(x, y, renderer,dst);
 }
 
 int32_t framework3::getwidth() {
@@ -39,6 +69,16 @@ int32_t framework3::getheight() {
 SDL_Renderer* framework3::getRenderer() {
     return renderer;
 }
+
+void framework3::drawDefaultScreen() {
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+    
+}
+
+TTF_Font* framework3::getFont() {
+    return font;
+}
+
 bool framework3::handleInput(bool &running) {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) {
@@ -54,16 +94,3 @@ bool framework3::handleInput(bool &running) {
     return running;
 }
 
-smartRectangle::smartRectangle(float startPointx,float startPointy,float width,float height)
-    :startx(startPointx),starty(startPointy),width(width),height(height) {
-        rect = new SDL_FRect {startx,starty,width,height};
-}
-
-smartRectangle::~smartRectangle() {
-    delete rect;
-    printf("Destroyed rect\n");
-}
-
-void smartRectangle::draw(SDL_Renderer* renderer) {
-    SDL_RenderFillRect( renderer, rect);
-}

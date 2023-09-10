@@ -1,65 +1,66 @@
 #include "header/framework3.hpp"
-#include <SDL3/SDL_oldnames.h>
-#include <SDL3/SDL_render.h>
-#include <iostream>
+#include "header/Draw.hpp"
+#include <SDL2/SDL_rect.h>
+#include <cstddef>
+#define STARTPOINTX 25
+#define STARTPOINTY 25
+#define FPS_INTERVAL 1.0
+
+//constants
+const int SCREEN_WIDTH = 662;
+const int SCREEN_HEIGHT = 662;
+
+enum gameStates {
+    START_SCREEN,
+    PLAY_SCREEN,
+    END_SCREEN,
+};
+
 //store user click data
-void drawDefaultScreen();
 void getInput(bool & running);
+
 int main() {
-    // char data[3][3] = {0,0,0, 0,0,0, 0,0,0};
-    // int32_t sdlver;
-    // std::cout << "which version you want to use 2 or 3?:"<<"\n";
-    // std::cin >> sdlver;
-    // if (sdlver == 2) {
-    //     /*run here*/
-    //     framework frame(800,600);
-    // bool tworunning = true;
+    framework3 frame3("TicTacToe",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,SCREEN_WIDTH,SCREEN_HEIGHT);
     
-    // while (tworunning) {
-    //     SDL_Event e;
-    //     while (SDL_PollEvent(&e) != 0) {
-    //         if (e.type == SDL_QUIT) {
-    //             tworunning = false;
-    //         }
-    //         SDL_SetRenderDrawColor(frame.getRenderer(), 0x00, 0x00, 0x00, 0xFF);
-    //         SDL_RenderClear(frame.getRenderer());
+    Draw mainFrame;
+    Draw line;
+    bool running = true;
+    int i= 0;
 
-    //         SDL_SetRenderDrawColor(frame.getRenderer(), 0x00, 0xFF, 0x00, 0xFF);
-    //         for (int i = 0; i < 10; i ++) {
-    //             SDL_RenderDrawLine(frame.getRenderer(), 50 +i, 50+i, 200 +i, 200+i);
-    //         }
+    int defaultState = START_SCREEN;
 
-    //         SDL_RenderPresent(frame.getRenderer());
-    //     }
-    // };
-    // }
-    // if (sdlver == 3){
-        /* run here */
-        framework3 frame3("TicTacToe",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,800,600);
-        bool running = true;
-    
-        while (running) {
-            frame3.handleInput(running);
-            SDL_SetRenderDrawColor(frame3.getRenderer(), 0x00, 0x00, 0x00, 0xFF);
-            SDL_RenderClear(frame3.getRenderer());
+    Uint32 fps_lasttime = SDL_GetTicks(); //the last recorded time.
+    Uint32 fps_current; //the current FPS.
+    Uint32 fps_frames = 0; 
+    while (running) {
+        frame3.handleInput(running);
+        
+        SDL_SetRenderDrawColor(frame3.getRenderer(), 0x00, 0x00, 0x00, 0xFF);
+        SDL_RenderClear(frame3.getRenderer());
 
-            smartRectangle d(50,50,700,500);
-            SDL_SetRenderDrawColor(frame3.getRenderer(), 128, 128, 0x00, 0xFF);
-            d.draw(frame3.getRenderer());
-            SDL_SetRenderDrawColor(frame3.getRenderer(), 0x00, 0xFF, 0x00, 0xFF);
-            for (int i = 0; i < 2; i++) {
-                SDL_RenderLine(frame3.getRenderer(), 50 , 50 +i, 750, 50 + i);
+        SDL_FRect fontDestination = {0,0,662-30 -30,25 + 30};
+        if (defaultState == START_SCREEN) {
+            frame3.renderFont(30 , 30,&fontDestination);
+            Draw rect;
+            SDL_FRect recta = {30,300,662-30 -30,70};
+            rect.setColor(206, 206, 13, 153);
+            rect.drawRectangle(frame3.getRenderer(), &recta);
+        }
 
-            }
-            // for (int i = 0; i<2;i++) {
-            //     SDL_RenderLine(frame3.getRenderer(), 100 +i, 50, 700+i, 50);
-            // }
-            SDL_RenderLine(frame3.getRenderer(), 50, 50, 50, 550);
-            SDL_RenderLine(frame3.getRenderer(), 50, 550, 750, 550);
-            SDL_RenderLine(frame3.getRenderer(), 750, 550, 750, 50);
+        
+        // drawPlayGround(frame3.getRenderer(), line, STARTPOINTX, STARTPOINTY);
 
-            SDL_RenderPresent(frame3.getRenderer());
+        update(frame3.getRenderer());
+        fps_frames++;
+        if (fps_lasttime < SDL_GetTicks() - FPS_INTERVAL*1000)
+        {
+            fps_lasttime = SDL_GetTicks();
+            fps_current = fps_frames;
+            SDL_Log("fps: %i\n",fps_current);
+            fps_frames = 0;
+        }
+
+
         };
-    // }
     return 0;
 }

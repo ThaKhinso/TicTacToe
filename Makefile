@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp header/framework3.cpp
+OBJS = main.cpp header/framework3.cpp header/Draw.cpp header/LTexture.cpp
 
 #CC specifies which compiler we're using
 CC1 = icpx
@@ -17,7 +17,8 @@ LIBRARY_PATHS = -LDependency/
 COMPILER_FLAGS = -w -Wl,--subsystem,windows
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL3
+LINKER_FLAGS = -lSDL3 -lSDL3_image -lSDL3_ttf -s
+LINKER_FLAGS2 = -lSDL3 -lSDL3_image -lSDL3_ttf -mwindows#lSDL3_ttf -lX11 -lXext -ldl -lpthread -s
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = bin/TicTacToe
@@ -25,6 +26,9 @@ OBJ_NAME = bin/TicTacToe
 #This is the target that compiles our executable
 gcc : $(OBJS)
 		$(CC2) $(OBJS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+
+noterminal : $(OBJS)
+				g++ $(OBJS) $(LINKER_FLAGS2) -o $(OBJ_NAME)_noter
 
 icc : $(OBJS)
 		$(CC1) $(OBJS) $(LINKER_FLAGS) -o $(OBJ_NAME)_icc
