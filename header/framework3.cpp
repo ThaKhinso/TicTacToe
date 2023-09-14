@@ -1,8 +1,4 @@
 #include "framework3.hpp"
-#include <SDL2/SDL_log.h>
-#include <SDL3/SDL_error.h>
-#include <SDL3/SDL_pixels.h>
-#include <SDL3_ttf/SDL_ttf.h>
 
 framework3::framework3(const char* title,int startposx,int startposy,int32_t screenwidth,int32_t screenheight) {
     if (SDL_Init(SDL_InitFlags::SDL_INIT_VIDEO)) {
@@ -25,15 +21,7 @@ framework3::framework3(const char* title,int startposx,int startposy,int32_t scr
         if (TTF_Init() == -1) {
             SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Initializing sdl ttf failed %s\n",TTF_GetError());
         } else {
-            font = TTF_OpenFont("Resources/fonts/lazy.ttf", 28);
-            if (font == NULL) {
-                SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Font loading failed,%s\n",SDL_GetError());
-            } else {
-                SDL_Color color = {255,0,0};
-                if (!fontTexture.loadFromRenderedText("Welcome to TicTacToe", color, renderer, font)) {
-                    SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "Text rendering failed: %s\n",SDL_GetError());
-                }
-            }
+            
         }
     }
 
@@ -44,8 +32,6 @@ framework3::~framework3() {
 
     fontTexture.free();
 
-    TTF_CloseFont(font);
-    font = NULL;
 
     SDL_DestroyWindow(window);
     window = NULL;
@@ -75,9 +61,6 @@ void framework3::drawDefaultScreen() {
     
 }
 
-TTF_Font* framework3::getFont() {
-    return font;
-}
 
 bool framework3::handleInput(bool &running) {
     SDL_Event e;
@@ -92,5 +75,9 @@ bool framework3::handleInput(bool &running) {
         }
     }
     return running;
+}
+
+void framework3::handleMouse(SDL_Event *e) {
+    
 }
 

@@ -1,5 +1,4 @@
 #include "LTexture.h"
-#include <SDL3/SDL_surface.h>
 LTexture::LTexture() {
     mTexture = NULL;
     mWidth = 0;
