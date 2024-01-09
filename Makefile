@@ -1,5 +1,6 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp header/framework3.cpp header/Draw.cpp header/LTexture.cpp header/loadthings.cpp
+OBJS = main.cpp header/framework3.cpp header/Draw.cpp header/LTexture.cpp header/loadthings.cpp header/Button.cpp
+OBJTEST = nvimtst.cpp header/framework3.cpp header/Draw.cpp header/LTexture.cpp header/loadthings.cpp header/Button.cpp
 SHARED = header/framework3.cpp header/Draw.cpp header/LTexture.cpp header/loadthings.cpp
 #CC specifies which compiler we're using
 CC1 = icpx
@@ -30,6 +31,11 @@ g++ : $(OBJS)
 g++shared : $(OBJS)
 				$(CC2) -shared $(SHARED)
 
+test : $(OBJS)
+		$(CC2) -O3 $(OBJTEST) -I header/ $(LINKER_FLAGS) -o bin/tested
+
+testE : $(OBJS)
+		$(CC2) $(OBJTEST) -I header/ -E > preprocced.cpp
 
 icc : $(OBJS)
 		$(CC1) $(OBJS) $(LINKER_FLAGS) -o $(OBJ_NAME)_icc

@@ -1,54 +1,101 @@
-
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
-void getInput(bool &running);
-int main() {
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    char data[3][3] = {0,0,0, 0,0,0, 0,0,0};
-    SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("Test sdl3", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1366, 680, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-        SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "%s",SDL_GetError());
-    }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RendererFlags::SDL_RENDERER_ACCELERATED);
-    // initWindow(window, renderer,"Test",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,600,600);
-    bool running = true;
-    while (running) {
-        getInput(running);
-        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(renderer);
+#include <SDL2/SDL_image.h>
+#include <string>
 
-        SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
-        SDL_Rect rect = {0,0,50,50};
-        SDL_RenderFillRect(renderer, &rect);
-        // SDL_RenderDrawRect(renderer,&rect);
-        SDL_RenderPresent(renderer);
-        
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+const int WALKING_ANIMATION_FRAMES = 2;
+
+SDL_Window* gWindow = nullptr;
+SDL_Renderer* gRenderer = nullptr;
+SDL_Texture* stickManTextures[WALKING_ANIMATION_FRAMES] = {nullptr};
+
+bool initialize() {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        return false;
     }
 
-    SDL_DestroyWindow(window);
-    window = NULL;
+    gWindow = SDL_CreateWindow("Stick Man Walking Animation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!gWindow) {
+        return false;
+    }
 
+    gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+    if (!gRenderer) {
+        return false;
+    }
 
-    SDL_DestroyRenderer(renderer);
-    
-    renderer = NULL;
+    return true;
+}
+
+bool loadMedia() {
+    // Load stick man images
+    for (int i = 1; i <= WALKING_ANIMATION_FRAMES; ++i) {
+        std::string imagePath = "art/enemyFlyingAlt_" + std::to_string(i) + ".png";
+        SDL_Surface* surface = IMG_Load(imagePath.c_str());
+        if (!surface) {
+            return false;
+        }
+
+        stickManTextures[i] = SDL_CreateTextureFromSurface(gRenderer, surface);
+        SDL_FreeSurface(surface);
+
+        if (!stickManTextures[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void close() {
+    for (int i = 0; i < WALKING_ANIMATION_FRAMES; ++i) {
+        SDL_DestroyTexture(stickManTextures[i]);
+    }
+
+    SDL_DestroyRenderer(gRenderer);
+    SDL_DestroyWindow(gWindow);
     SDL_Quit();
 }
 
-void getInput(bool &running) {
+int main() {
+    if (!initialize()) {
+        return 1;
+    }
+
+    if (!loadMedia()) {
+        return 2;
+    }
+
+    bool quit = false;
     SDL_Event e;
-    while (SDL_PollEvent(&e) != 0) {
+
+    int frame = 0; // Current animation frame
+
+    while (!quit) {
+        while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
-                running = false;
-            }
-            if (e.type == SDL_KEYDOWN) {
-                if (e.key.keysym.sym == SDLK_ESCAPE) {
-                    running = false;
-                }
+                quit = true;
             }
         }
+
+        // Clear the renderer
+        SDL_RenderClear(gRenderer);
+
+        // Render the stick man at the current frame
+        SDL_Rect destRect = {100, 100, 100, 100}; // Adjust position and size as needed
+        SDL_RenderCopy(gRenderer, stickManTextures[frame], NULL, &destRect);
+
+        // Update the screen
+        SDL_RenderPresent(gRenderer);
+
+        // Move to the next frame (toggle between frames)
+        frame = (frame + 1) % WALKING_ANIMATION_FRAMES;
+
+        // Add a small delay to control the animation speed
+        SDL_Delay(100); // Adjust as needed
+    }
+
+    close();
+    return 0;
 }

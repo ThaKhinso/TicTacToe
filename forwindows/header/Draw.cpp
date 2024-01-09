@@ -1,5 +1,5 @@
 #include "Draw.hpp"
-#include <stdio.h>
+#include <cstdio>
 Draw::Draw() {
     red = 0;
     green = 0;
@@ -11,7 +11,7 @@ Draw::~Draw() {
     //nothing to do here
 }
 
-void Draw::drawRectangle(SDL_Renderer *renderer, const SDL_FRect* rect) {
+void Draw::drawRectangle(SDL_Renderer *renderer, const SDL_Rect* rect) {
     SDL_SetRenderDrawColor(renderer, red, green, blue, opacity);
     SDL_RenderFillRect(renderer, rect);
     
@@ -23,7 +23,7 @@ void Draw::printValue() {
 
 void Draw::drawLine(SDL_Renderer *renderer,float startx,float starty,float endx,float endy) {
     SDL_SetRenderDrawColor(renderer, red, green, blue, opacity);
-    SDL_RenderLine(renderer, startx, starty, endx, endy);
+    SDL_RenderDrawLine(renderer, startx, starty, endx, endy);
 }
 
 void Draw::setColor(Uint8 r, Uint8 g, Uint8 b,Uint8 o) {
@@ -37,12 +37,12 @@ void Draw::setColor(Uint8 r, Uint8 g, Uint8 b,Uint8 o) {
 void Draw::drawBigLine(SDL_Renderer *renderer, float startx, float starty, float endx, float endy, int width) {
     SDL_SetRenderDrawColor(renderer, red, green, blue, opacity);
     for (int i = 0; i < width; i++) {
-        SDL_RenderLine(renderer, startx +i, starty, endx +i, endy);
+        SDL_RenderDrawLine(renderer, startx +i, starty, endx +i, endy);
     }
 }
 
 void Draw::drawPoint(SDL_Renderer* renderer, float startx, float starty) {
-    SDL_RenderPoint(renderer, startx, starty);
+    SDL_RenderDrawPoint(renderer, startx, starty);
 }
 
 void update(SDL_Renderer *renderer) {
@@ -62,11 +62,11 @@ void drawPlayGround(SDL_Renderer *renderer, Draw &line,float STARTPOINTX,float S
     }
 }
 
-void drawCross(SDL_Renderer *renderer, Draw &line, float startpointx, float startpointy, float ENDPOINTX,float ENDPOINTY) {
+void drawCross(SDL_Renderer *renderer, Draw &line, float STARTPOINTX, float STARTPOINTY, float ENDPOINTX,float ENDPOINTY) {
     line.setColor(0xFF, 0x00, 0x00, 0xFF);
-    for (int i = 0; i < startpointx + 100; i++) {
-        if (startpointx < 200 || startpointy < 200 ) {
-            line.drawPoint(renderer, startpointx + i, startpointy + i);
+    for (int i = 0; i < STARTPOINTX + 100; i++) {
+        if (STARTPOINTX < 200 || STARTPOINTY < 200 ) {
+            line.drawPoint(renderer, STARTPOINTX + i, STARTPOINTY + i);
         }
     }
 

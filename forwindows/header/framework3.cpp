@@ -1,16 +1,15 @@
 #include "framework3.hpp"
-#include <SDL3/SDL_events.h>
 framework3::framework3(const char* title,int startposx,int startposy,int32_t screenwidth,int32_t screenheight) 
     :startgame(false){
-    if (SDL_Init(SDL_InitFlags::SDL_INIT_VIDEO)) {
+    if (SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "%s", SDL_GetError());
     }
-    window = SDL_CreateWindowWithPosition(title,startposx,startposy,screenwidth,screenheight,SDL_WINDOW_VULKAN);
+    window = SDL_CreateWindow(title,startposx,startposy,screenwidth,screenheight,SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Creating window failed: %s\n",SDL_GetError());
     }
-    renderer = SDL_CreateRenderer(window,NULL,SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) {
         SDL_LogCritical(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Creating renderer failedL %s\n",SDL_GetError());
     } else {
@@ -41,7 +40,7 @@ framework3::~framework3() {
     SDL_Quit();
 }
 
-void framework3::renderFont(float x, float y,SDL_FRect* dst) {
+void framework3::renderFont(float x, float y,SDL_Rect* dst) {
     fontTexture.render(x, y, renderer,dst);
 }
 
@@ -67,13 +66,13 @@ bool framework3::handleInput(bValues& values) {
     SDL_Event e;
     static bool handle = true;
     while (SDL_PollEvent(&e) != 0) {
-        if (e.type == SDL_EVENT_QUIT) {
+        if (e.type == SDL_QUIT) {
             values.running = false;
         }
         if (handle == true) {
             handleMouse(&e, handle);
         }
-        if (e.type == SDL_EVENT_KEY_DOWN) {
+        if (e.type == SDL_KEYDOWN) {
             if (e.key.keysym.sym == SDLK_ESCAPE) {
                 values.running = false;
             }
@@ -83,8 +82,8 @@ bool framework3::handleInput(bValues& values) {
 }
 
 bool framework3::handleMouse(SDL_Event *e,bool& handle) {
-    if(e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN || e->type == SDL_EVENT_MOUSE_BUTTON_UP){
-        float x,y;
+    if(e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP){
+        int x,y;
         SDL_GetMouseState(&x, &y);
         bool inside = true;
         if (x < 30 ) {
@@ -106,7 +105,7 @@ bool framework3::handleMouse(SDL_Event *e,bool& handle) {
 
         if (inside == true) {
             switch (e->type) {
-                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_MOUSEBUTTONDOWN:
                 handle = false;
                 startgame = true;
                 handle = false;

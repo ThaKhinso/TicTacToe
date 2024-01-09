@@ -21,7 +21,7 @@ public:
     SDL_Renderer* getRenderer();
 
     void drawDefaultScreen();
-    void renderFont(float x,float y,SDL_FRect* dst);
+    void renderFont(float x,float y,SDL_Rect* dst);
     bool handleInput(bValues& values);
     bool handleMouse(SDL_Event* e,bool &handle);
     bool getStartGame();

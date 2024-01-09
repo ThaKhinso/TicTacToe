@@ -1,11 +1,12 @@
 #pragma once
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_render.h>
+#include <SDL.h>
+#include <SDL_image.h>
+
 class Draw {
 public:
     Draw();
     ~Draw();
-    void drawRectangle(SDL_Renderer* renderer,const SDL_FRect* rect);
+    void drawRectangle(SDL_Renderer* renderer,const SDL_Rect* rect);
     void drawLine(SDL_Renderer* renderer,float startx,float starty,float endx,float endy);
     void drawBigLine(SDL_Renderer* renderer,float startx,float starty,float endx,float endy, int width);
     void drawPoint(SDL_Renderer* renderer, float startx, float starty);
@@ -23,4 +24,4 @@ private:
 void update(SDL_Renderer* renderer);
 
 void drawPlayGround(SDL_Renderer* renderer,Draw& line,float STARTPOINTX,float STARTPOINTY);
-void drawCross(SDL_Renderer* renderer,Draw& line, float startpointx,float startpointy,float ENDPOINTX,float ENDPOINTY);
+void drawCross(SDL_Renderer* renderer,Draw& line, float STARTPOINTX,float STARTPOINTY);
