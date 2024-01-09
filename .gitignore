@@ -33,4 +33,7 @@
 
 bin/
 Resources/
+window/
+c/
 .gitignore
+c/c++ roadmap
